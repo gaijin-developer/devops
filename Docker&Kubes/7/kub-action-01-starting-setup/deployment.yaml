@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: second-app-deployment
+  labels:
+    group: example
+spec:
+  selector:
+    # matchLabels:
+    #   app: second-app
+    matchExpressions:
+      - key: app
+        values:
+          - second-app
+          - first-app
+        operator: In
+      - { key: app, operator: In, values: [second-app, first-app] }
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: second-app
+    spec:
+      containers:
+        - name: second-node
+          image: gaijinwebdev/kub-first-app:2
+          imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 3
+            initialDelaySeconds: 5
